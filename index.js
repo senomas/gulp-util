@@ -12,13 +12,9 @@ const filter = require("gulp-filter");
 const mocha = require("gulp-mocha");
 const rename = require("gulp-rename");
 
-const runSequence = require("run-sequence");
-
 const fs = require("fs");
 const { exec, spawn } = require("child_process");
-const path = require("path");
 const pify = require("pify");
-const stat = pify(fs.stat);
 const rimraf = require("rimraf");
 const moment = require("moment");
 const yarnLock = require("yarn-lockfile");
@@ -110,7 +106,7 @@ const killAllSpawn = () => {
   processes.forEach(p => p.kill());
 };
 
-const waitPort = port => {
+const waitPort = (port, timeout = 60) => {
   return new Promise((resolve, reject) => {
     var retry = 0;
     const test = () => {
@@ -118,14 +114,14 @@ const waitPort = port => {
         const lines = stdout.trim().split("\n");
         if (lines.length === 2) {
           resolve(0);
-        } else if (retry++ > 30) {
+        } else if (retry++ > timeout) {
           reject(new Error(`Port not ready ${port}`));
         } else {
-          setTimeout(test, 2000);
+          setTimeout(test, 1000);
         }
       });
     };
-    setTimeout(test, 2000);
+    setTimeout(test, 1000);
   });
 };
 
@@ -143,6 +139,8 @@ const killPort = port => {
     });
   });
 };
+
+gulp.spawn = spawnWrap;
 
 module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
   gulp.task("yarn", () => {
@@ -241,6 +239,8 @@ module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
   });
 
   return {
+    SRC,
+
     gulp,
     changed,
     log,
