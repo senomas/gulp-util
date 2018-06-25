@@ -1,4 +1,5 @@
 const gulp = require("gulp");
+const promisify = require("gulp-promisify");
 const changed = require("gulp-changed");
 const log = require("fancy-log");
 const debug = require("gulp-debug");
@@ -22,7 +23,9 @@ const async = require("async");
 const merge = require("merge-stream");
 const source = require("vinyl-source-stream");
 
-const processes = [];
+promisify(gulp);
+
+const spawned = [];
 
 const filterSince = src => {
   const mt = mtime(src);
@@ -98,12 +101,12 @@ const spawnWrap = (cmd, options = {}) => {
       stream.end();
     }
   });
-  processes.push(child);
+  spawned.push(child);
   return stream;
 };
 
 const killAllSpawn = () => {
-  processes.forEach(p => p.kill());
+  spawned.forEach(p => p.kill());
 };
 
 const waitPort = (port, timeout = 60) => {
@@ -139,8 +142,6 @@ const killPort = port => {
     });
   });
 };
-
-gulp.spawn = spawnWrap;
 
 module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
   gulp.task("yarn", () => {
@@ -240,8 +241,9 @@ module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
 
   return {
     SRC,
+    spawned,
 
-    gulp,
+    gulp: Object.assign(gulp, { spawn: spawnWrap }),
     changed,
     log,
     debug,

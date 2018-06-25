@@ -928,6 +928,10 @@ gulp-mocha@6.0.0:
     supports-color "^5.4.0"
     through2 "^2.0.3"
 
+gulp-promisify@1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/gulp-promisify/-/gulp-promisify-1.2.2.tgz#1ac8c7daf88efc06e9b8ebcab107264a75869742"
+
 gulp-rename@1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/gulp-rename/-/gulp-rename-1.3.0.tgz#2e789d8f563ab0c924eeb62967576f37ff4cb826"
