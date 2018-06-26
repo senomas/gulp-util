@@ -50,7 +50,9 @@ const touchFile = src => {
 };
 
 const spawnWrap = (cmd, options = {}) => {
-  fs.writeFileSync(options.log || "spawn.log", "");
+  if (!options.appendLog) {
+    fs.writeFileSync(options.log || "spawn.log", "");
+  }
   const stream = source(options.log || "spawn.log");
   if (typeof options.shell === "undefined") {
     options.shell = true;
