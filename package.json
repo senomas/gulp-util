@@ -1,6 +1,6 @@
 {
   "name": "senogulp",
-  "version": "0.9.26",
+  "version": "0.9.27",
   "description": "seno gulp util",
   "main": "index.js",
   "author": "Senomas <agus@senomas.com>",
