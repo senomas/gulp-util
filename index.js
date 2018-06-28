@@ -162,7 +162,9 @@ module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
       .pipe(touch());
   });
 
-  gulp.task("tsc", ["yarn", "touch-src"], () => {
+  gulp.task("pre-tsc");
+
+  gulp.task("tsc", ["yarn", "touch-src", "pre-tsc"], () => {
     return gulp
       .src(SRC, { read: false })
       .pipe(changed("dist", { extension: ".js" }))
