@@ -12,10 +12,10 @@ const tap = require("gulp-tap");
 const filter = require("gulp-filter");
 const mocha = require("gulp-mocha");
 const rename = require("gulp-rename");
+const ssh = require("gulp-ssh");
 
 const fs = require("fs");
 const { exec, spawn } = require("child_process");
-const pify = require("pify");
 const rimraf = require("rimraf");
 const moment = require("moment");
 const yarnLock = require("yarn-lockfile");
@@ -259,6 +259,7 @@ module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
     filter,
     rename,
     mocha,
+    ssh,
 
     filterSince,
     filterBefore,
