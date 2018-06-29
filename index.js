@@ -96,10 +96,13 @@ const spawnWrap = (cmd, options = {}) => {
   child.on("error", data => {
     stream.write("\n\nERROR: ");
     stream.write(data);
+    stream.emit("error", data);
   });
   child.on("exit", data => {
     if (data) {
+      log("EXIT-WITH-DATA", data);
       stream.end(`\n\nEXIT ${data}`);
+      stream.emit("error", new Error(`Exit with return code ${data}`));
     } else {
       stream.end();
     }
