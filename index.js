@@ -60,6 +60,11 @@ const spawnWrap = (cmd, options = {}) => {
   if (typeof options.console === "undefined") {
     options.console = true;
   }
+  if (options.title) {
+    log(options.title, cmd);
+  } else {
+    log(cmd);
+  }
   const child = spawn(cmd, options);
   child.stdout.on("data", data => {
     if (options.console) {
