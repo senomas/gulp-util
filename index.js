@@ -13,6 +13,7 @@ const filter = require("gulp-filter");
 const mocha = require("gulp-mocha");
 const rename = require("gulp-rename");
 const ssh = require("gulp-ssh");
+const insert = require("gulp-insert");
 
 const fs = require("fs");
 const { exec, spawn } = require("child_process");
@@ -105,7 +106,7 @@ const spawnWrap = (cmd, options = {}) => {
   });
   child.on("exit", data => {
     if (data) {
-      log("EXIT-WITH-DATA", data);
+      log("Exit with return code", data);
       stream.end(`\n\nEXIT ${data}`);
       stream.emit("error", new Error(`Exit with return code ${data}`));
     } else {
@@ -270,6 +271,7 @@ module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
     rename,
     mocha,
     ssh,
+    insert,
 
     filterSince,
     filterBefore,
