@@ -160,7 +160,8 @@ module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
     return gulp
       .src(["./package.json"])
       .pipe(filterSince("./yarn.lock"))
-      .pipe(yarn());
+      .pipe(yarn())
+      .pipe(debug({ title: "YARN" }));
   });
 
   gulp.task("touch-src", ["yarn"], () => {
