@@ -108,7 +108,12 @@ const spawnWrap = (cmd, options = {}) => {
     if (data) {
       log(`${options.cwd || path.resolve(".")} Exit with return code`, data);
       stream.end(`\n\nEXIT ${data}`);
-      stream.emit("error", new Error(`Exit with return code ${data}`));
+      stream.emit(
+        "error",
+        new Error(
+          `${options.cwd || path.resolve(".")} Exit with return code ${data}`
+        )
+      );
     } else {
       stream.end();
     }
