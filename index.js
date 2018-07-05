@@ -16,6 +16,7 @@ const ssh = require("gulp-ssh");
 const insert = require("gulp-insert");
 
 const fs = require("fs");
+const path = require("path");
 const { exec, spawn } = require("child_process");
 const rimraf = require("rimraf");
 const moment = require("moment");
@@ -125,6 +126,9 @@ const spawnWrap = (cmd, options = {}) => {
 const killAllSpawn = () => {
   spawned.forEach(p => p.kill());
 };
+
+process.on("SIGINT", killAllSpawn);
+process.on("SIGTERM", killAllSpawn);
 
 const waitPort = (port, timeout = 60) => {
   return new Promise((resolve, reject) => {
