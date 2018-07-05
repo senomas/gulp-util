@@ -106,7 +106,7 @@ const spawnWrap = (cmd, options = {}) => {
   });
   child.on("exit", data => {
     if (data) {
-      log("Exit with return code", data);
+      log(`${options.cwd || path.resolve(".")} Exit with return code`, data);
       stream.end(`\n\nEXIT ${data}`);
       stream.emit("error", new Error(`Exit with return code ${data}`));
     } else {
@@ -125,9 +125,15 @@ const waitPort = (port, timeout = 60) => {
   return new Promise((resolve, reject) => {
     var retry = 0;
     const test = () => {
-      exec(`lsof -P -i :${port}`, (err, stdout) => {
-        const lines = stdout.trim().split("\n");
-        if (lines.length === 2) {
+      exec("netstat -an --tcp", (err, stdout) => {
+        const lines = stdout
+          .trim()
+          .split("\n")
+          .map(ln => ln.split(new RegExp("\\s+")))
+          .slice(2)
+          .filter(v => v[3].endsWith(`:${port}`));
+        log(`RESULT ${JSON.stringify(lines, undefined, 2)}`);
+        if (lines.length > 0) {
           resolve(0);
         } else if (retry++ > timeout) {
           reject(new Error(`Port not ready ${port}`));
