@@ -125,6 +125,7 @@ const spawnWrap = (cmd, options = {}) => {
 
 const killAllSpawn = () => {
   spawned.forEach(p => p.kill());
+  process.exit(0);
 };
 
 process.on("SIGINT", killAllSpawn);
@@ -141,7 +142,6 @@ const waitPort = (port, timeout = 60) => {
           .map(ln => ln.split(new RegExp("\\s+")))
           .slice(2)
           .filter(v => v[3].endsWith(`:${port}`));
-        log(`RESULT ${JSON.stringify(lines, undefined, 2)}`);
         if (lines.length > 0) {
           resolve(0);
         } else if (retry++ > timeout) {
