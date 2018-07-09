@@ -1,6 +1,6 @@
 {
   "name": "senogulp",
-  "version": "0.9.42",
+  "version": "0.9.43",
   "description": "seno gulp util",
   "main": "index.js",
   "author": "Senomas <agus@senomas.com>",
@@ -28,6 +28,7 @@
     "gulp-promisify": "1.2.2",
     "gulp-rename": "1.3.0",
     "gulp-rimraf": "0.2.2",
+    "gulp-sequence": "^1.0.0",
     "gulp-ssh": "0.7.0",
     "gulp-tap": "1.0.1",
     "gulp-touch": "1.0.1",
