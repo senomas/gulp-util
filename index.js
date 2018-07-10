@@ -68,6 +68,7 @@ const spawnWrap = (cmd, options = {}) => {
     log(cmd);
   }
   const child = spawn(cmd, options);
+  options.child = child;
   child.stdout.on("data", data => {
     if (options.console) {
       data
