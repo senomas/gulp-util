@@ -14,6 +14,7 @@ const mocha = require("gulp-mocha");
 const rename = require("gulp-rename");
 const ssh = require("gulp-ssh");
 const insert = require("gulp-insert");
+const sequence = require("gulp-sequence");
 
 const fs = require("fs");
 const path = require("path");
@@ -288,6 +289,7 @@ module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
     rename,
     mocha,
     ssh,
+    sequence,
     insert,
 
     filterSince,
