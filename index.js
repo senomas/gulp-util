@@ -109,12 +109,16 @@ const spawnWrap = (cmd, options = {}) => {
   });
   child.on("exit", data => {
     if (data) {
-      log(`${options.cwd || path.resolve(".")}/${cmd} Exit with return code`, data);
+      log(
+        `${options.cwd || path.resolve(".")}/${cmd} Exit with return code`,
+        data
+      );
       stream.end(`\n\nEXIT ${data}`);
       stream.emit(
         "error",
         new Error(
-          `${options.cwd || path.resolve(".")}/${cmd} Exit with return code ${data}`
+          `${options.cwd ||
+            path.resolve(".")}/${cmd} Exit with return code ${data}`
         )
       );
     } else {
@@ -289,6 +293,7 @@ module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
     rename,
     mocha,
     ssh,
+    source,
     sequence,
     insert,
 
