@@ -15,6 +15,7 @@ const rename = require("gulp-rename");
 const ssh = require("gulp-ssh");
 const insert = require("gulp-insert");
 const sequence = require("gulp-sequence");
+const plumber = require("gulp-plumber");
 
 const fs = require("fs");
 const path = require("path");
@@ -198,6 +199,7 @@ module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
   gulp.task("tsc", ["yarn", "touch-src", "pre-tsc"], () => {
     return gulp
       .src(SRC, { read: false })
+      .pipe(plumber())
       .pipe(changed("dist", { extension: ".js" }))
       .pipe(debug({ title: "tsc" }))
       .pipe(tslint())
@@ -296,6 +298,7 @@ module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
     source,
     sequence,
     insert,
+    plumber,
 
     filterSince,
     filterBefore,
