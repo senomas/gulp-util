@@ -27,6 +27,7 @@ const yarnLock = require("yarn-lockfile");
 const async = require("async");
 const merge = require("merge-stream");
 const source = require("vinyl-source-stream");
+const color = require("ansi-colors");
 
 promisify(gulp);
 
@@ -210,12 +211,15 @@ module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
   gulp.task("tsc", ["yarn", "touch-src", "pre-tsc"], () => {
     return gulp
       .src(SRC, { read: false })
-      .pipe(plumber())
       .pipe(changed("dist", { extension: ".js" }))
       .pipe(debug({ title: "tsc" }))
       .pipe(tslint())
       .pipe(tslint.report())
       .pipe(typescript({ project: "." }))
+      .on("error", function(error) {
+        log("Typescript compilation exited with " + color.red(error));
+        process.exit(1);
+      })
       .pipe(gulp.dest("dist"))
       .pipe(debug({ title: "dest" }));
   });
@@ -323,6 +327,7 @@ module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
 
     moment,
     async,
-    merge
+    merge,
+    color
   };
 };
