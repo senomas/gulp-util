@@ -179,6 +179,16 @@ const killPort = port => {
 };
 
 module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
+  gulp.task("bump", cb => {
+    exec("npm version patch", (err, stdout) => {
+      if (err) {
+        return cb(err);
+      }
+      console.log(stdout);
+      cb();
+    });
+  });
+
   gulp.task("yarn", () => {
     return gulp
       .src(["./package.json"])

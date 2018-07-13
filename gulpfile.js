@@ -1,7 +1,6 @@
 const yargs = require("yargs");
 
 const gulp = require("gulp");
-const bump = require("gulp-bump");
 const { exec } = require("child_process");
 
 gulp.task("bump", cb => {
