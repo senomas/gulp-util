@@ -17,6 +17,7 @@ const insert = require("gulp-insert");
 const sequence = require("gulp-sequence");
 const plumber = require("gulp-plumber");
 const bump = require("gulp-bump");
+const clean = require("gulp-clean");
 
 const fs = require("fs");
 const path = require("path");
@@ -314,6 +315,7 @@ module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
     source,
     sequence,
     insert,
+    clean,
     plumber,
 
     filterSince,
