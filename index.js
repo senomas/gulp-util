@@ -76,6 +76,7 @@ const spawnWrap = (cmd, options = {}) => {
   }
   const child = spawn(cmd, options);
   options.child = child;
+  const rmx = /\[\d{2}:\d{2}:\d{2}\]\s*(.*)/g;
   child.stdout.on("data", data => {
     if (options.console) {
       data
@@ -83,11 +84,24 @@ const spawnWrap = (cmd, options = {}) => {
         .replace(/\s*$/, "")
         .split("\n")
         .forEach(ln => {
-          if (options.title) {
-            log(options.title, ln);
+          const lnm = rmx.exec(ln);
+          if (lnm) {
+            if (lnm[1] !== "") {
+              if (options.title) {
+                log(options.title, lnm[1]);
+              }
+              else {
+                log(lnm[1]);
+              }
+            }
           }
           else {
-            log(ln);
+            if (options.title) {
+              log(options.title, ln);
+            }
+            else {
+              log(ln);
+            }
           }
         });
     }
@@ -100,33 +114,40 @@ const spawnWrap = (cmd, options = {}) => {
         .replace(/\s*$/, "")
         .split("\n")
         .forEach(ln => {
-          if (options.title) {
-            log(options.title, ln);
+          const lnm = rmx.exec(ln);
+          if (lnm) {
+            if (lnm[1] !== "") {
+              if (options.title) {
+                log(options.title, lnm[1]);
+              }
+              else {
+                log(lnm[1]);
+              }
+            }
           }
           else {
-            log(ln);
+            if (options.title) {
+              log(options.title, ln);
+            }
+            else {
+              log(ln);
+            }
           }
         });
     }
     stream.write(data);
   });
   child.on("error", data => {
-    stream.write("\n\nERROR: ");
-    stream.write(data.toString());
     stream.emit("error", data);
   });
   child.on("exit", data => {
     if (data) {
-      log(
-        `${options.cwd || path.resolve(".")}/${cmd} Exit with return code`,
-        data
-      );
+      log(`${ options.cwd || path.resolve(".") }/${cmd} Exit with return code`, data);
       stream.end(`\n\nEXIT ${data}`);
       stream.emit(
         "error",
         new Error(
-          `${options.cwd ||
-            path.resolve(".")}/${cmd} Exit with return code ${data}`
+          `${options.cwd || path.resolve(".")}/${cmd} Exit with return code ${data}`
         )
       );
     }
