@@ -29,9 +29,21 @@ const spawnSync = async(cmd, options = {}) => {
     let fout;
     if (options.log) {
       fout = fs.createWriteStream(options.log);
-      printData = (data) => {
-        fout.write(data.toString());
+      if (options.console) {
+        printData = (data) => {
+          const ds = data.toString();
+          ds.replace(/\s*$/, "").split("\n").forEach(ln => {
+            log(ln);
+          });
+          fout.write(ds);
+        };
       }
+      else {
+        printData = (data) => {
+          fout.write(data.toString());
+        }
+      }
+      delete options.console;
     }
     else {
       printData = (data) => {
