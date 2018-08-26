@@ -47,7 +47,8 @@ const filterBefore = src => {
 const mtime = src => {
   try {
     return fs.statSync(src).mtime.getTime();
-  } catch (err) {
+  }
+  catch (err) {
     return 0;
   }
 };
@@ -69,7 +70,8 @@ const spawnWrap = (cmd, options = {}) => {
   }
   if (options.title) {
     log(options.title, cmd);
-  } else {
+  }
+  else {
     log(cmd);
   }
   const child = spawn(cmd, options);
@@ -83,7 +85,8 @@ const spawnWrap = (cmd, options = {}) => {
         .forEach(ln => {
           if (options.title) {
             log(options.title, ln);
-          } else {
+          }
+          else {
             log(ln);
           }
         });
@@ -99,7 +102,8 @@ const spawnWrap = (cmd, options = {}) => {
         .forEach(ln => {
           if (options.title) {
             log(options.title, ln);
-          } else {
+          }
+          else {
             log(ln);
           }
         });
@@ -108,7 +112,7 @@ const spawnWrap = (cmd, options = {}) => {
   });
   child.on("error", data => {
     stream.write("\n\nERROR: ");
-    stream.write(data);
+    stream.write(data.toString());
     stream.emit("error", data);
   });
   child.on("exit", data => {
@@ -125,7 +129,8 @@ const spawnWrap = (cmd, options = {}) => {
             path.resolve(".")}/${cmd} Exit with return code ${data}`
         )
       );
-    } else {
+    }
+    else {
       stream.end();
     }
   });
@@ -154,9 +159,11 @@ const waitPort = (port, timeout = 60) => {
           .filter(v => v[3].endsWith(`:${port}`));
         if (lines.length > 0) {
           resolve(0);
-        } else if (retry++ > timeout) {
+        }
+        else if (retry++ > timeout) {
           reject(new Error(`Port not ready ${port}`));
-        } else {
+        }
+        else {
           setTimeout(test, 1000);
         }
       });
@@ -173,7 +180,8 @@ const killPort = port => {
         exec(`kill -9 ${lines[1].split(/\s+/)[1]}`, () => {
           resolve(0);
         });
-      } else {
+      }
+      else {
         resolve(0);
       }
     });
@@ -249,7 +257,8 @@ module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
                   if (ref.length === 1) {
                     if (rv.resolved.endsWith(`#${ref[0].split("\t")[0]}`)) {
                       acb();
-                    } else {
+                    }
+                    else {
                       log(`yarn upgrade ${dk}`);
                       exec(`yarn upgrade ${dk}`, (err, stdout, stderr) => {
                         log(stderr);
@@ -257,7 +266,8 @@ module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
                         acb(err);
                       });
                     }
-                  } else {
+                  }
+                  else {
                     log(`yarn upgrade ${dk}`);
                     exec(`yarn upgrade ${dk}`, (err, stdout, stderr) => {
                       log(stderr);
@@ -265,12 +275,14 @@ module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
                       acb(err);
                     });
                   }
-                } else {
+                }
+                else {
                   acb(err);
                 }
               }
             );
-          } else {
+          }
+          else {
             log(`yarn upgrade ${dk}`);
             exec(`yarn upgrade ${dk}`, (err, stdout, stderr) => {
               log(stderr);
@@ -278,7 +290,8 @@ module.exports = (SRC = ["**/*.ts", "!node_modules/**", "!dist/**"]) => {
               acb(err);
             });
           }
-        } else {
+        }
+        else {
           acb();
         }
       },
