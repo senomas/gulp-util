@@ -1,7 +1,6 @@
 const fs = require("fs");
 const { spawn, exec } = require("child_process");
 const log = require("fancy-log");
-const glob = require('glob');
 const yarnLock = require("yarn-lockfile");
 
 const execSync = async(cmd) => {
