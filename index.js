@@ -71,7 +71,7 @@ const spawnSync = async(cmd, options = {}) => {
   });
 }
 
-const waitPort = (port, timeout = 60) => {
+const waitPort = (port, timeout = 60, name = "") => {
   return new Promise((resolve, reject) => {
     var retry = 0;
     const test = () => {
@@ -89,7 +89,7 @@ const waitPort = (port, timeout = 60) => {
           resolve(0);
         }
         else if (retry++ > timeout) {
-          reject(new Error(`Port not ready ${port}`));
+          reject(new Error(`Port not ready ${port} ${name}`));
         }
         else {
           setTimeout(test, 1000);
