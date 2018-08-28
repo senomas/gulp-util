@@ -62,11 +62,14 @@ const spawnSync = async(cmd, options = {}) => {
     proc.stderr.on("data", data => {
       printData(data);
     });
-    proc.on("exit", () => {
+    proc.on("exit", code => {
       if (fout) {
         fout.close();
       }
-      resolve()
+      if (code && code !== 0) {
+        return reject(new Error(`${cmd}: Exit ${code}`));
+      }
+      resolve();
     });
   });
 }
