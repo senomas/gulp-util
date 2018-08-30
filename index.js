@@ -1,10 +1,11 @@
 const fs = require("fs");
+const path = require("path");
 const { spawn, exec } = require("child_process");
 const log = require("fancy-log");
 const yarnLock = require("yarn-lockfile");
 
 const execSync = async(cmd) => {
-  log("EXEC:", cmd);
+  log("EXEC:", path.resolve("."), cmd);
   return new Promise((resolve, reject) => {
     exec(cmd, (err, stdout, stderr) => {
       if (err) {
@@ -16,7 +17,7 @@ const execSync = async(cmd) => {
 }
 
 const spawnSync = async(cmd, options = {}) => {
-  log("SPAWN:", cmd);
+  log("SPAWN:", path.resolve("."), cmd);
   if (options.shell === undefined) {
     options.shell = true;
   }
