@@ -17,7 +17,7 @@ const execSync = async(cmd) => {
 }
 
 const spawnSync = async(cmd, options = {}) => {
-  log(`SPAWN[${options.cwd || path.resolve(".")}]:`, cmd);
+  log(`SPAWN[${path.resolve(options.cwd || ".")}]:`, cmd);
   if (options.shell === undefined) {
     options.shell = true;
   }
