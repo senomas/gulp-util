@@ -4,10 +4,13 @@ const { spawn, exec } = require("child_process");
 const log = require("fancy-log");
 const yarnLock = require("yarn-lockfile");
 
-const execSync = async(cmd) => {
+const execSync = async(cmd, options = {}) => {
   log(`EXEC[${path.resolve(".")}]:`, cmd);
+  if (options.maxBuffer === undefined) {
+    options.maxBuffer = 1024 * 500;
+  }
   return new Promise((resolve, reject) => {
-    exec(cmd, (err, stdout, stderr) => {
+    exec(cmd, options, (err, stdout, stderr) => {
       if (err) {
         return reject(err);
       }
