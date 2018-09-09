@@ -82,7 +82,7 @@ const waitPort = (port, timeout = 60, name = "") => {
   return new Promise((resolve, reject) => {
     var retry = 0;
     const test = () => {
-      exec("netstat -an --tcp", (err, stdout) => {
+      exec("netstat -an --tcp | grep LISTEN", (err, stdout) => {
         if (err) {
           return reject(err);
         }
