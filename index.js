@@ -71,7 +71,7 @@ const spawnSync = async(cmd, options = {}) => {
         fout.close();
       }
       if (code && code !== 0) {
-        return reject(new Error(`${cmd}: Exit ${code}`));
+        return reject(new Error(`SPAWN[${path.resolve(options.cwd || ".")}] ${cmd}: Exit ${code}`));
       }
       resolve();
     });
