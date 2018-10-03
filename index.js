@@ -6,27 +6,35 @@ const yarnLock = require("yarn-lockfile");
 const gst = require("git-state");
 
 const gitCheck = async(path) => {
-  let counter = 0;
   fs.readdirSync(path).forEach(f => {
     const fn = `${path}/${f}`;
     if (!f.startsWith('.') && fs.lstatSync(fn).isDirectory() && gst.isGitSync(fn)) {
       const gc = gst.checkSync(fn);
       if (gc.ahead) {
-        counter++;
-        console.log(`${f}: AHEAD ${gc.ahead}`);
-      } else if (gc.dirty) {
-        counter++;
-        if (gc.untracked) {
-          console.log(`${f}: DIRTY ${gc.dirty} UNTRACKED ${gc.untracked}`);
+        if (gc.dirty) {
+          if (gc.untracked) {
+            console.log(`${f}#${gc.branch}: AHEAD ${gc.ahead} DIRTY ${gc.dirty} UNTRACKED ${gc.untracked}`);
+          } else {
+            console.log(`${f}#${gc.branch}: AHEAD ${gc.ahead} DIRTY ${gc.dirty}`);
+          }
         } else {
-          console.log(`${f}: DIRTY ${gc.dirty}`);
+          if (gc.untracked) {
+            console.log(`${f}#${gc.branch}: AHEAD ${gc.ahead} UNTRACKED ${gc.untracked}`);
+          } else {
+            console.log(`${f}#${gc.branch}: AHEAD ${gc.ahead}`);
+          }
         }
+      } else if (gc.dirty) {
+        if (gc.untracked) {
+          console.log(`${f}#${gc.branch}: DIRTY ${gc.dirty} UNTRACKED ${gc.untracked}`);
+        } else {
+          console.log(`${f}#${gc.branch}: DIRTY ${gc.dirty}`);
+        }
+      } else {
+        console.log(`${f}#${gc.branch}: clean`);
       }
     }
   });
-  if (counter === 0) {
-    console.log("clean");
-  }
 }
 
 const execSync = async(cmd, options = {}) => {
