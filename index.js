@@ -3,6 +3,31 @@ const path = require("path");
 const { spawn, exec } = require("child_process");
 const log = require("fancy-log");
 const yarnLock = require("yarn-lockfile");
+const gst = require("git-state");
+
+const gitCheck = async(path) => {
+  let counter = 0;
+  fs.readdirSync(path).forEach(f => {
+    const fn = `${path}/${f}`;
+    if (!f.startsWith('.') && fs.lstatSync(fn).isDirectory() && gst.isGitSync(fn)) {
+      const gc = gst.checkSync(fn);
+      if (gc.ahead) {
+        counter++;
+        console.log(`${f}: AHEAD ${gc.ahead}`);
+      } else if (gc.dirty) {
+        counter++;
+        if (gc.untracked) {
+          console.log(`${f}: DIRTY ${gc.dirty} UNTRACKED ${gc.untracked}`);
+        } else {
+          console.log(`${f}: DIRTY ${gc.dirty}`);
+        }
+      }
+    }
+  });
+  if (counter === 0) {
+    console.log("clean");
+  }
+}
 
 const execSync = async(cmd, options = {}) => {
   log(`EXEC[${path.resolve(".")}]:`, cmd);
@@ -142,4 +167,4 @@ const yarnUpgradeGit = async() => {
   }
 }
 
-module.exports = { execSync, spawnSync, waitPort, yarnUpgradeGit };
+module.exports = { gitCheck, execSync, spawnSync, waitPort, yarnUpgradeGit };
