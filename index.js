@@ -111,6 +111,31 @@ const spawnSync = async(cmd, options = {}) => {
   });
 }
 
+const checkPorts = ports => {
+  return new Promise((resolve, reject) => {
+    exec("netstat -an --tcp | grep LISTEN", (err, stdout) => {
+      if (err) {
+        return reject(err);
+      }
+      const lines = stdout
+        .trim()
+        .split("\n")
+        .map(ln => ln.split(new RegExp("\\s+")));
+      for (const idx in ports) {
+        const port = ports[idx];
+        if (
+          lines.filter(v => v.length >= 3 && v[3].endsWith(`:${port}`))
+            .length === 0
+        ) {
+          console.log(`FAILED ${port}`, lines);
+          return resolve(false);
+        }
+      }
+      resolve(true);
+    });
+  });
+};
+
 const waitPort = (port, timeout = 60, name = "") => {
   return new Promise((resolve, reject) => {
     var retry = 0;
@@ -123,8 +148,7 @@ const waitPort = (port, timeout = 60, name = "") => {
           .trim()
           .split("\n")
           .map(ln => ln.split(new RegExp("\\s+")))
-          .slice(2)
-          .filter(v => v[3].endsWith(`:${port}`));
+          .filter(v => v.length >=3 && v[3].endsWith(`:${port}`));
         if (lines.length > 0) {
           resolve(0);
         }
