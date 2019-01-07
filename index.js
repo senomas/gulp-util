@@ -199,4 +199,4 @@ const yarnUpgradeGit = async() => {
   }
 }
 
-module.exports = { gitCheck, execSync, spawnSync, waitPort, yarnUpgradeGit };
+module.exports = { gitCheck, execSync, spawnSync, checkPorts, waitPort, yarnUpgradeGit };
