@@ -127,7 +127,6 @@ const checkPorts = ports => {
           lines.filter(v => v.length >= 3 && v[3].endsWith(`:${port}`))
             .length === 0
         ) {
-          console.log(`FAILED ${port}`, lines);
           return resolve(false);
         }
       }
