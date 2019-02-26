@@ -1,32 +1,47 @@
 const fs = require("fs");
 const path = require("path");
+const netstat = require("node-netstat");
 const { spawn, exec } = require("child_process");
 const log = require("fancy-log");
 const yarnLock = require("yarn-lockfile");
 const gst = require("git-state");
 
-const gitCheck = async(path) => {
+const gitCheck = async path => {
   fs.readdirSync(path).forEach(f => {
     const fn = `${path}/${f}`;
-    if (!f.startsWith('.') && fs.lstatSync(fn).isDirectory() && gst.isGitSync(fn)) {
+    if (
+      !f.startsWith(".") &&
+      fs.lstatSync(fn).isDirectory() &&
+      gst.isGitSync(fn)
+    ) {
       const gc = gst.checkSync(fn);
       if (gc.ahead) {
         if (gc.dirty) {
           if (gc.untracked) {
-            console.log(`${f}#${gc.branch}: AHEAD ${gc.ahead} DIRTY ${gc.dirty} UNTRACKED ${gc.untracked}`);
+            console.log(
+              `${f}#${gc.branch}: AHEAD ${gc.ahead} DIRTY ${
+                gc.dirty
+              } UNTRACKED ${gc.untracked}`
+            );
           } else {
-            console.log(`${f}#${gc.branch}: AHEAD ${gc.ahead} DIRTY ${gc.dirty}`);
+            console.log(
+              `${f}#${gc.branch}: AHEAD ${gc.ahead} DIRTY ${gc.dirty}`
+            );
           }
         } else {
           if (gc.untracked) {
-            console.log(`${f}#${gc.branch}: AHEAD ${gc.ahead} UNTRACKED ${gc.untracked}`);
+            console.log(
+              `${f}#${gc.branch}: AHEAD ${gc.ahead} UNTRACKED ${gc.untracked}`
+            );
           } else {
             console.log(`${f}#${gc.branch}: AHEAD ${gc.ahead}`);
           }
         }
       } else if (gc.dirty) {
         if (gc.untracked) {
-          console.log(`${f}#${gc.branch}: DIRTY ${gc.dirty} UNTRACKED ${gc.untracked}`);
+          console.log(
+            `${f}#${gc.branch}: DIRTY ${gc.dirty} UNTRACKED ${gc.untracked}`
+          );
         } else {
           console.log(`${f}#${gc.branch}: DIRTY ${gc.dirty}`);
         }
@@ -35,9 +50,9 @@ const gitCheck = async(path) => {
       }
     }
   });
-}
+};
 
-const execSync = async(cmd, options = {}) => {
+const execSync = async (cmd, options = {}) => {
   log(`EXEC[${path.resolve(".")}]:`, cmd);
   if (options.maxBuffer === undefined) {
     options.maxBuffer = 1024 * 500;
@@ -50,9 +65,9 @@ const execSync = async(cmd, options = {}) => {
       resolve(stdout + stderr);
     });
   });
-}
+};
 
-const spawnSync = async(cmd, options = {}) => {
+const spawnSync = async (cmd, options = {}) => {
   log(`SPAWN[${path.resolve(options.cwd || ".")}]:`, cmd);
   if (options.shell === undefined) {
     options.shell = true;
@@ -60,30 +75,30 @@ const spawnSync = async(cmd, options = {}) => {
   return new Promise((resolve, reject) => {
     const proc = spawn(cmd, options);
     proc.on("error", err => {
-      return reject(err)
+      return reject(err);
     });
     let printData;
     let fout;
     if (options.log) {
       fout = fs.createWriteStream(options.log);
       if (options.console) {
-        printData = (data) => {
+        printData = data => {
           const ds = data.toString();
-          ds.replace(/\s*$/, "").split("\n").forEach(ln => {
-            log(ln);
-          });
+          ds.replace(/\s*$/, "")
+            .split("\n")
+            .forEach(ln => {
+              log(ln);
+            });
           fout.write(ds);
         };
-      }
-      else {
-        printData = (data) => {
+      } else {
+        printData = data => {
           fout.write(data.toString());
-        }
+        };
       }
       delete options.console;
-    }
-    else {
-      printData = (data) => {
+    } else {
+      printData = data => {
         data
           .toString()
           .replace(/\s*$/, "")
@@ -104,70 +119,64 @@ const spawnSync = async(cmd, options = {}) => {
         fout.close();
       }
       if (code && code !== 0) {
-        return reject(new Error(`SPAWN[${path.resolve(options.cwd || ".")}] ${cmd}: Exit ${code}`));
+        return reject(
+          new Error(
+            `SPAWN[${path.resolve(options.cwd || ".")}] ${cmd}: Exit ${code}`
+          )
+        );
       }
       resolve();
     });
   });
-}
+};
 
 const checkPorts = ports => {
-  return new Promise((resolve, reject) => {
-    exec("netstat -an --tcp | grep LISTEN", (err, stdout) => {
-      if (err) {
-        return reject(err);
+  const lports = [];
+  netstat(
+    { sync: true, filter: { protocol: "tcp", state: "LISTENING" } },
+    data => {
+      if (data.local.port) {
+        lports.push(data.local.port);
       }
-      const lines = stdout
-        .trim()
-        .split("\n")
-        .map(ln => ln.split(new RegExp("\\s+")));
-      for (const idx in ports) {
-        const port = ports[idx];
-        if (
-          lines.filter(v => v.length >= 3 && v[3].endsWith(`:${port}`))
-            .length === 0
-        ) {
-          return resolve(false);
-        }
-      }
-      resolve(true);
-    });
-  });
+    }
+  );
+  for (const port of ports) {
+    if (lports.indexOf(port) < 0) {
+      return false;
+    }
+  }
+  return true;
 };
 
 const waitPort = (port, timeout = 60, name = "") => {
   return new Promise((resolve, reject) => {
     var retry = 0;
     const test = () => {
-      exec("netstat -an --tcp | grep LISTEN", (err, stdout) => {
-        if (err) {
-          return reject(err);
+      const lports = [];
+      netstat(
+        { sync: true, filter: { protocol: "tcp", state: "LISTENING" } },
+        data => {
+          if (data.local.port) {
+            lports.push(data.local.port);
+          }
         }
-        const lines = stdout
-          .trim()
-          .split("\n")
-          .map(ln => ln.split(new RegExp("\\s+")))
-          .filter(v => v.length >=3 && v[3].endsWith(`:${port}`));
-        if (lines.length > 0) {
-          resolve(0);
-        }
-        else if (retry++ > timeout) {
-          reject(new Error(`Port not ready ${port} ${name}`));
-        }
-        else {
-          setTimeout(test, 1000);
-        }
-      });
+      );
+      if (lports.indexOf(port) >= 0) {
+        resolve(true);
+      } else if (retry++ > timeout) {
+        reject(new Error(`Port not ready ${port} ${name}`));
+      } else {
+        setTimeout(test, 1000);
+      }
     };
     setTimeout(test, 1000);
   });
 };
 
-const yarnUpgradeGit = async() => {
+const yarnUpgradeGit = async () => {
   const deps = JSON.parse(fs.readFileSync("package.json").toString())
     .dependencies;
-  const lock = yarnLock.parse(fs.readFileSync("./yarn.lock").toString())
-    .object;
+  const lock = yarnLock.parse(fs.readFileSync("./yarn.lock").toString()).object;
   const depsa = Object.keys(deps);
   for (let i = 0, il = depsa.length; i < il; i++) {
     const dk = depsa[i];
@@ -182,20 +191,24 @@ const yarnUpgradeGit = async() => {
         if (ref.length === 1) {
           if (rv.resolved.endsWith(`#${ref[0].split("\t")[0]}`)) {
             // skip
-          }
-          else {
+          } else {
             await execSync(`yarn upgrade ${dk}`);
           }
-        }
-        else {
+        } else {
           await execSync(`yarn upgrade ${dk}`);
         }
-      }
-      else {
+      } else {
         await execSync(`yarn upgrade ${dk}`);
       }
     }
   }
-}
+};
 
-module.exports = { gitCheck, execSync, spawnSync, checkPorts, waitPort, yarnUpgradeGit };
+module.exports = {
+  gitCheck,
+  execSync,
+  spawnSync,
+  checkPorts,
+  waitPort,
+  yarnUpgradeGit
+};

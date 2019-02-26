@@ -44,6 +44,7 @@
     "mocha": "5.2.0",
     "mocha-typescript": "1.1.17",
     "moment": "2.23.0",
+    "node-netstat": "^1.6.0",
     "pify": "4.0.1",
     "run-sequence": "2.2.1",
     "ts-loader": "5.3.3",
