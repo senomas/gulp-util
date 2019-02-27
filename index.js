@@ -154,9 +154,9 @@ const waitPort = (port, timeout = 60, name = "") => {
     const test = () => {
       const lports = [];
       netstat(
-        { sync: true, filter: { protocol: "tcp", state: "LISTENING" } },
+        { sync: true, filter: { state: "LISTENING" } },
         data => {
-          if (data.local.port) {
+          if (data.local.port && (protocol === "tcp" || protocol === "tcp6")) {
             lports.push(data.local.port);
           }
         }
