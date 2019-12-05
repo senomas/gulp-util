@@ -192,13 +192,13 @@ const yarnUpgradeGit = async () => {
           if (rv.resolved.endsWith(`#${ref[0].split("\t")[0]}`)) {
             // skip
           } else {
-            await execSync(`yarn upgrade ${dk}`);
+            await execSync(`yarn add ${dkv}`);
           }
         } else {
-          await execSync(`yarn upgrade ${dk}`);
+          await execSync(`yarn add ${dkv}`);
         }
       } else {
-        await execSync(`yarn upgrade ${dk}`);
+        await execSync(`yarn add ${dkv}`);
       }
     }
   }
