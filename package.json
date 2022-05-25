@@ -44,7 +44,7 @@
     "mem": "^6.0.1",
     "mocha": "6.2.2",
     "mocha-typescript": "1.1.17",
-    "moment": "2.24.0",
+    "moment": "2.29.2",
     "node-netstat": "^1.6.0",
     "pify": "4.0.1",
     "run-sequence": "2.2.1",
