@@ -48,7 +48,7 @@
     "node-netstat": "^1.6.0",
     "pify": "4.0.1",
     "run-sequence": "2.2.1",
-    "ts-loader": "6.2.1",
+    "ts-loader": "9.4.2",
     "ts-node": "8.5.4",
     "tslint": "5.20.1",
     "typescript": "^3.2.2",
